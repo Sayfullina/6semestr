@@ -1,0 +1,63 @@
+#include <QtCore/QCoreApplication>
+
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <conio.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <iterator>
+#include <stdio.h>
+#include <time.h>
+using namespace std;
+
+
+void selection(int *a, int n)
+ {
+     int i, j, mx, nmx;
+
+     for(i = 0; i < n-1; i++)
+       {
+         mx=a[i];
+         nmx=i;
+         for(j = i+1; j < n; j++)
+           {
+             if (a[j]<mx)
+                {
+                 mx=a[j];
+                 nmx=j;
+                 }
+           }
+          a[nmx]=a[i];
+          a[i]=mx;
+          cout<<a[i]<<"\t";
+           }
+     }
+int main()
+{
+    ifstream f, g;
+    int n=0;s
+    string line;
+    f.open("1.txt", ios::in);
+    g.open("1.txt", ios::in);
+    clock_t start = clock();
+    getchar();
+    clock_t end = clock();
+    double seconds = (double)(end - start) / CLOCKS_PER_SEC;
+    if(f)
+    {
+        while(!f.eof())
+        {
+            f>>a[n];
+            n++;
+             getline(g, line);
+        }
+        cout<<line<<"\t";
+        cout<<"n="<<n-1<<endl;
+        selection(a,n);
+        printf("The time: %f seconds\n", seconds);
+        //radix(a, br, cr, sizeC, sizeAB);
+        f.close();
+    }
+    system("pause");
+}
