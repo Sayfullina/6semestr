@@ -1,0 +1,70 @@
+#include <QtCore/QCoreApplication>
+
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <conio.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <iterator>
+#include <stdio.h>
+#include <time.h>
+using namespace std;
+
+void radix(int *a, int n)
+{
+    int i,k, m;
+    int br[100];
+    int cr[100];
+
+    k = n;
+    m = n;
+    for (i = 0; i <= k; i++)
+        cr[i]=0;
+    for (i = 0; i < m; i++)
+        cr[a[i]]+=1;
+    for (i = 1; i < k+1; i++)
+        cr[i]+=cr[i-1];
+    for (i = m-1; i >= 0; i--)
+      {
+         br[cr[a[i]]-1]=a[i];
+         cr[a[i]]-=1;
+      }
+    for(i=0; i<k; i++)
+    {
+        cout<<cr[i]<<"\t";
+    }
+  }
+
+
+int main()
+{
+    ifstream f, g;
+    int n=0, sizeC, sizeAB;
+    int a[100];
+    int br[100];
+    int cr[100];
+    string line;
+    f.open("1.txt", ios::in);
+    g.open("1.txt", ios::in);
+    clock_t start = clock();
+    getchar();
+    clock_t end = clock();
+    double seconds = (double)(end - start) / CLOCKS_PER_SEC;
+    if(f)
+    {
+        while(!f.eof())
+        {
+            f>>a[n];
+            n++;
+             getline(g, line);
+        }
+        cout<<line<<"\t";
+        cout<<"n="<<n-1<<endl;
+        //selection(a,n);
+        printf("The time: %f seconds\n", seconds);
+        radix(a, n);
+        f.close();
+    }
+    system("pause");
+}
