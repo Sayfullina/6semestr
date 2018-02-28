@@ -1,0 +1,295 @@
+#include <iostream>
+#include <fstream>
+#include "mainwindow.h"
+#include "ui_mainwindow.h"
+#include <QFile>
+#include <time.h>
+#include <conio.h>
+#include <cmath>
+#include <stdio.h>
+#include <stdlib.h>
+#include <QLineEdit>
+#include <ctime>
+
+
+#define size 30
+
+using namespace std;
+MainWindow::MainWindow(QWidget *parent) :
+    QMainWindow(parent),
+    ui(new Ui::MainWindow)
+{
+    ui->setupUi(this);
+}
+
+MainWindow::~MainWindow()
+{
+    delete ui;
+
+}
+
+/////////////глупая сортировка///////////////////////
+void stupidSort(int *A, int n)
+{
+   // clock_t start=clock();
+    int i = 0, tmp;
+    ofstream fout("time_stupidSort.txt", ios_base::app);
+    while (i < n - 1)
+    {
+        if (A[i+1] < A[i])
+        {
+            tmp = A[i];
+            A[i] = A[i+1];
+            A[i+1] = tmp;
+            i = 0;
+        }
+        else i++;
+    }
+     clock_t start=clock();
+    clock_t end=clock();
+    double seconds=(double)(end-start)/CLOCKS_PER_SEC;
+    fout<<seconds;
+    fout.close();
+}
+
+////////////гномья сортировка////////////////
+void GnomeSort(int *A, int N)
+{
+    clock_t start=clock();
+    int i = 0;
+    ofstream fout("time_gnomeSort.txt", ios_base::app);
+    while(i < N) {
+        if(i == 0 || A[i - 1] <= A[i])
+        {
+            ++i;
+        }
+        else {
+            int Temp = A[i];
+            A[i] = A[i - 1];
+            A[i - 1] = Temp;
+            --i;
+        }
+    }
+    clock_t end=clock();
+    double seconds=(double)(end-start)/CLOCKS_PER_SEC;
+    fout<<seconds;
+    fout.close();
+}
+
+///////////////Нисходящая//////////
+void N_mergeSort(int *A, int l, int r)
+{
+ clock_t start=clock();
+ ofstream fout("time_N_Sort.txt", ios_base::app);
+  if (l == r) return; // границы сомкнулись
+  int mid = (l + r) / 2; // определяем середину последовательности
+  // и рекурсивно вызываем функцию сортировки для каждой половины
+  N_mergeSort(A, l, mid);
+  N_mergeSort(A, mid + 1, r);
+  int i = l;  // начало первого пути
+  int j = mid + 1; // начало второго пути
+  int *tmp = (int*)malloc(r * sizeof(int)); // дополнительный массив
+  for (int step = 0; step < r - l + 1; step++) // для всех элементов дополнительного массива
+  {
+    // записываем в формируемую последовательность меньший из элементов двух путей
+    // или остаток первого пути если j > r
+    if ((j > r) || ((i <= mid) && (A[i] < A[j])))
+    {
+      tmp[step] = A[i];
+      i++;
+    }
+    else
+    {
+      tmp[step] = A[j];
+      j++;
+    }
+  }
+  // переписываем сформированную последовательность в исходный массив
+  for (int step = 0; step < r - l + 1; step++)
+  {
+      A[l + step] = tmp[step];
+  }
+  clock_t end=clock();
+  double seconds=(double)(end-start)/CLOCKS_PER_SEC;
+  fout<<seconds;
+  fout.close();
+}
+
+void V_mergeSort(int *A, int n)
+{
+     clock_t start=clock();
+      ofstream fout("time_V_Sort.txt", ios_base::app);
+  int step = 1;  // шаг разбиения последовательности
+  int *temp = (int*)malloc(n * sizeof(temp)); // дополнительный массив
+  while (step < n)  // пока шаг меньше длины массива
+  {
+    int index = 0;    // индекс результирующего массива
+    int l = 0;      // левая граница участка
+    int m = l + step;  // середина участка
+    int r = l + step * 2;  // правая граница участка
+    do
+    {
+      m = m < n ? m : n;  // сортируемый участок не выходит за границы последовательности
+      r = r < n ? r : n;
+      int i1 = l, i2 = m; // индексы сравниваемых элементов
+      for (; i1 < m && i2 < r; ) // пока i1 не дошёл до середины и i2 не дошёл до конца
+      {
+        if (A[i1] < A[i2]) { temp[index++] = A[i1++]; } // заполняем участок результирующей последовательности
+        else { temp[index++] = A[i2++]; }
+      }
+      // Или i1 < m или i2 < r - только один из операторов while может выполниться
+      while (i1 < m) temp[index++] = A[i1++]; // заносим оставшиеся элементы сортируемых участков
+      while (i2 < r) temp[index++] = A[i2++]; // в результирующий массив
+      l += step * 2; // перемещаемся на следующий сортируемый участок
+      m += step * 2;
+      r += step * 2;
+    } while (l < n); // пока левая граница сортируемого участка - в пределах последоватльности
+    for (int i = 0; i < n; i++) // переносим сформированный массив обратно в a
+      A[i] = temp[i];
+    step *= 2; // увеличиваем в 2 раза шаг разбиения
+  }
+  clock_t end=clock();
+  double seconds=(double)(end-start)/CLOCKS_PER_SEC;
+  fout<<seconds;
+  fout.close();
+}
+
+void MainWindow::on_pushButton_clicked()
+{
+    if(ui->radioButton->isChecked())//если глупая
+    {
+        ifstream f, g;
+            int n=0;
+            int A[size];
+            string line;
+            f.open("30.txt", ios::in);
+            g.open("Result.txt", ios::in);
+            if(f)
+            {
+                while(!f.eof())
+                {
+                    f>>A[n];
+                    n++;
+                    getline(g, line);
+                }
+                stupidSort(A,n);
+                f.close();
+            }
+            double seconds;
+            ui->lineEdit->setText(QString::number(seconds));
+        for(int i=0; i<n-1; i++)
+            {
+            ui->textEdit_2->append(QString::number(A[i]));
+        }
+    }
+
+
+    if(ui->radioButton_2->isChecked())//если гномья
+    {
+        ifstream f, g;
+            int n=0;
+            int A[size];
+            string line;
+            f.open("30.txt", ios::in);
+            g.open("Result.txt", ios::in);
+            if(f)
+            {
+                while(!f.eof())
+                {
+                    f>>A[n];
+                    n++;
+                    getline(g, line);
+                }
+                GnomeSort(A, n);
+                f.close();
+            }
+                double seconds;
+             ui->lineEdit->setText(QString::number(seconds));
+
+        for(int i=0; i<n-1; i++)
+            {
+            ui->textEdit_2->append(QString::number(A[i]));
+        }
+
+
+    }
+    if(ui->radioButton_3->isChecked())//если нисходящая
+    {
+        ifstream f, g;
+            int n=0;
+            int A[size];
+            string line;
+            f.open("30.txt", ios::in);
+            g.open("Result.txt", ios::in);
+            if(f)
+            {
+                while(!f.eof())
+                {
+                    f>>A[n];
+                    n++;
+                    getline(g, line);
+                }
+                N_mergeSort(A, 0, size-1);
+                f.close();
+            }
+            for(int i=0; i<size; i++)
+                {
+                ui->textEdit_2->append(QString::number(A[i]));
+            }
+             double seconds;
+           ui->lineEdit->setText(QString::number(seconds));
+
+
+    }
+    if(ui->radioButton_4->isChecked())//если восходящая
+    {
+        ifstream f, g;
+            int n=0;
+            int A[size];
+            string line;
+            f.open("30.txt", ios::in);
+            g.open("Result.txt", ios::in);
+            if(f)
+            {
+                while(!f.eof())
+                {
+                    f>>A[n];
+                    n++;
+                    getline(g, line);
+                }
+                V_mergeSort(A, n);
+                f.close();
+            }
+                double seconds;
+         ui->lineEdit->setText(QString::number(seconds));
+
+     for(int i=0; i<n-1; i++)
+         {
+         ui->textEdit_2->append(QString::number(A[i]));
+     }
+    }
+}
+
+void MainWindow::on_pushButton_2_clicked()
+{
+    ifstream f, g;
+        int n=0;
+        int B[size];
+        string line;
+        f.open("30.txt", ios::in);
+        g.open("Result.txt", ios::in);
+        if(f)
+        {
+            while(!f.eof())
+            {
+                f>>B[n];
+                n++;
+                getline(g, line);
+            }
+            for(int i=0; i<n-1; i++)
+                {
+                ui->textEdit->append(QString::number(B[i]));
+            }
+            f.close();
+        }
+}

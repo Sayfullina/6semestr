@@ -1,0 +1,219 @@
+#include <QtCore/QCoreApplication>
+#include <iostream>
+#include <fstream>
+#include <time.h>
+#include <conio.h>
+#include <cmath>
+#include <stdio.h>
+#include <stdlib.h>
+
+using namespace std;
+#define size 500
+
+/////////////глупая сортировка///////////////////////
+void stupidSort(int *data, int n)
+{
+    int i = 0, tmp;
+    FILE *f1;
+    string in;
+    clock_t start = clock();
+    while (i < n - 1)
+    {
+        if (data[i+1] < data[i])
+        {
+            tmp = data[i];
+            data[i] = data[i+1];
+            data[i+1] = tmp;
+            i = 0;
+        }
+        else i++;
+
+    }
+    cout<<endl;
+    clock_t end = clock();
+    double sim_sort_Time = double(end - start)/ CLOCKS_PER_SEC;
+    cout<<"stupidSort"<<endl;
+    cout<<"Time:";
+    cout<<sim_sort_Time<<endl;
+
+for(int i=0; i<15; i++)
+    {
+     cout<<data[i]<<"\t";
+}
+
+
+}
+
+////////////гномья сортировка////////////////
+//template<class T>
+void GnomeSort(int *data, int N)
+{
+    int i = 0;
+    clock_t start2 = clock();
+    while(i < N) {
+        if(i == 0 || data[i - 1] <= data[i])
+        {
+            ++i;
+        }
+        else {
+            int Temp = data[i];
+            data[i] = data[i - 1];
+            data[i - 1] = Temp;
+            --i;
+        }
+    }
+    clock_t end2 = clock();
+    double sim_sort_Time2 = double(end2 - start2)/CLOCKS_PER_SEC;
+    cout<<"GnomeSort"<<endl;
+    cout<<endl;
+    cout<<"Time:";
+    cout<<sim_sort_Time2<<endl;
+
+for(int i=0; i<15; i++)
+    {
+     cout<<data[i]<<"\t";
+}
+
+}
+
+///////////////Нисходящая//////////
+void N_mergeSort(int *data, int l, int r)
+{
+
+  if (l == r) return; // границы сомкнулись
+   clock_t start3 = clock();
+  int mid = (l + r) / 2; // определяем середину последовательности
+  // и рекурсивно вызываем функцию сортировки для каждой половины
+//  N_mergeSort(data, l, mid);
+//  N_mergeSort(data, mid + 1, r);
+  int i = l;  // начало первого пути
+  int j = mid + 1; // начало второго пути
+  int *tmp = (int*)malloc(r * sizeof(int)); // дополнительный массив
+  for (int step = 0; step < r - l + 1; step++) // для всех элементов дополнительного массива
+  {
+    // записываем в формируемую последовательность меньший из элементов двух путей
+    // или остаток первого пути если j > r
+    if ((j > r) || ((i <= mid) && (data[i] < data[j])))
+    {
+      tmp[step] = data[i];
+      i++;
+    }
+    else
+    {
+      tmp[step] = data[j];
+      j++;
+    }
+  }
+  // переписываем сформированную последовательность в исходный массив
+  for (int step = 0; step < r - l + 1; step++)
+  {
+      data[l + step] = tmp[step];
+  }
+
+  clock_t end3 = clock();
+  double sim_sort_Time3 = double(end3 - start3) / CLOCKS_PER_SEC;
+   cout<<"N_mergeSort"<<endl;
+   cout<<"Time:";
+  cout<<sim_sort_Time3<<endl;
+
+for(int i=0; i<15; i++)
+  {
+   cout<<data[i]<<"\t";
+}
+}
+
+////////////восходящая//////////
+void V_mergeSort(int *data, int n)
+{
+  int step = 1;  // шаг разбиения последовательности
+  clock_t start4 = clock();
+  int *temp = (int*)malloc(n * sizeof(temp)); // дополнительный массив
+  while (step < n)  // пока шаг меньше длины массива
+  {
+    int index = 0;    // индекс результирующего массива
+    int l = 0;      // левая граница участка
+    int m = l + step;  // середина участка
+    int r = l + step * 2;  // правая граница участка
+    do
+    {
+      m = m < n ? m : n;  // сортируемый участок не выходит за границы последовательности
+      r = r < n ? r : n;
+      int i1 = l, i2 = m; // индексы сравниваемых элементов
+      for (; i1 < m && i2 < r; ) // пока i1 не дошёл до середины и i2 не дошёл до конца
+      {
+        if (data[i1] < data[i2]) { temp[index++] = data[i1++]; } // заполняем участок результирующей последовательности
+        else { temp[index++] = data[i2++]; }
+      }
+      // Или i1 < m или i2 < r - только один из операторов while может выполниться
+      while (i1 < m) temp[index++] = data[i1++]; // заносим оставшиеся элементы сортируемых участков
+      while (i2 < r) temp[index++] = data[i2++]; // в результирующий массив
+      l += step * 2; // перемещаемся на следующий сортируемый участок
+      m += step * 2;
+      r += step * 2;
+    } while (l < n); // пока левая граница сортируемого участка - в пределах последоватльности
+    for (int i = 0; i < n; i++) // переносим сформированный массив обратно в a
+      data[i] = temp[i];
+    step *= 2; // увеличиваем в 2 раза шаг разбиения
+  }
+  clock_t end4 = clock();
+  double sim_sort_Time4 = double(end4 - start4)/CLOCKS_PER_SEC;
+  cout<<endl;
+   cout<<"V_mergeSort"<<endl;
+   cout<<"Time:";
+  cout<<sim_sort_Time4<<endl;
+
+for(int i=0; i<15; i++)
+  {
+   cout<<data[i]<<"\t";
+}
+
+}
+
+/*void sort()
+{
+const int column =13500;
+int data[column];
+    QFile file(":/Table.txt");
+
+           if (!file.open(QIODevice::ReadOnly))
+            {
+                //qDebug() <<  "Cannot open a file";
+            }
+
+            int i = 0;
+            QDataStream in(&file);
+            while (!in.atEnd())
+            {
+                in >> data[i];
+                i++;
+            }
+
+}*/
+int main()
+{
+    ifstream f, g;
+    int n=0;
+    int data[size];
+    string line;
+    f.open("500.txt", ios::in);
+    g.open("Result.txt", ios::in);
+    if(f)
+    {
+        while(!f.eof())
+        {
+            f>>data[n];
+            n++;
+            getline(g, line);
+        }
+      // cout<<line<<"\t";
+        //stupidSort(data,n);
+        GnomeSort(data, n);
+//       N_mergeSort(data, 0, size-1);
+
+//       V_mergeSort(data, n);
+        f.close();
+    }
+
+
+   system("pause");
+}
