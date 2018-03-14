@@ -1,0 +1,180 @@
+#include "mainwindow.h"
+#include "ui_mainwindow.h"
+#include "stdio.h"
+#include "conio.h"
+#include <iostream>
+#include <fstream>
+#include <QString>
+#include <QMessageBox>
+#include <QTextEdit>
+using namespace std;
+const int lim=25;
+
+MainWindow::MainWindow(QWidget *parent) :
+        QMainWindow(parent),
+        ui(new Ui::MainWindow)
+{
+    ui->setupUi(this);
+}
+
+MainWindow::~MainWindow()
+{
+    delete ui;
+}
+
+void getline(QString *str,int lim)
+{
+    int c,i;
+    c=1;
+
+    for(i=0;(i<lim-1) && (c!=(int)'\n');i++)
+    {
+        c=getchar();
+        str[i]=c;
+
+    }
+    str[i]='\0';
+}
+
+struct book
+{
+    int UDKnumber;
+    QString autor[lim];
+    QString bookname[lim];
+    QString year;
+    int kolvo;
+    book* next;
+};
+book* firstbook = new book;
+book* lastbook = firstbook;
+bool isFirst=true;
+
+void MainWindow::on_pushButton_clicked()//сформировать список
+{
+    QString stroka;
+    int n=10,i;//,c,j,k;
+    QString str=" ";
+    //printf("Введите количество книг в библиотеке\n");//Opredelite assortiment biblioteki
+    //cin>>n;
+    // n=ui->lineEdit_2->text().toInt();
+
+    if(isFirst) isFirst=false;
+    else
+    {
+        lastbook->next=new book;
+        lastbook=lastbook->next;
+    }
+    ///UDK
+    QString str1=ui->lineEdit->text();
+    lastbook->UDKnumber=str1.toInt();
+    // getline(str1, lim);
+    ///FIO
+    QString str2=ui->lineEdit_2->text();
+    lastbook->autor[0]=str2;
+    //getline(str2, lim);
+    ///Name_book
+    QString str3=ui->lineEdit_3->text();
+    lastbook->bookname[0]=str3;
+    // getline(str3, lim);
+    ///Year
+    QString str4=ui->lineEdit_4->text();
+    lastbook->year=str4;
+    //getline(str4, lim);
+    ///Kolvo
+    QString str5=ui->lineEdit_5->text();
+    lastbook->kolvo=str5.toInt();
+    // getline(str5, lim);
+    QString Final=str1+str+str2+str+str3+str+str4+str+str5;
+    ui->textEdit->append(Final);
+    lastbook->next=NULL;
+    ui->lineEdit->clear();
+    ui->lineEdit_2->clear();
+    ui->lineEdit_3->clear();
+    ui->lineEdit_4->clear();
+    ui->lineEdit_5->clear();
+}
+
+void MainWindow::on_pushButton_2_clicked()//выдача книг
+{
+    int zapros, j, n=10, k;
+    QString str=" ";
+    QString no;
+    zapros=ui->lineEdit_6->text().toInt();
+    for(book* t=firstbook;t!=NULL;t=t->next)
+    {
+        if(zapros==t->UDKnumber)
+        {
+            if(t->kolvo!=0)
+            {
+                t->kolvo=t->kolvo-1;
+                k=t->kolvo;
+                QString str1=(QString::number(zapros));
+                QString str2=(QString::number(k));
+                QString Fina2=str1+str+str2;
+                ui->textEdit_2->append(Fina2);
+                QMessageBox::information(0, "SMS", "Your book !");
+                break;
+            }
+            else
+            {
+                k=t->kolvo;
+                QString str1=(QString::number(zapros));
+                QString str2=(QString::number(k));
+                QString Fina2=str1+str+str2;
+                ui->textEdit_2->append(Fina2);
+                QMessageBox::information(0, "SMS", "The book is currently missing!");
+                //printf("Книга на данный момент отсутствует\n");
+                break;
+            }
+        }
+            if((zapros>lastbook->UDKnumber)&&(zapros!=lastbook->UDKnumber))
+            {
+                no="not";
+                QString str1=(QString::number(zapros));
+                QString str2=no;
+                QString Fina2=str1+str+str2;
+                ui->textEdit_2->append(Fina2);
+                QMessageBox::information(0, "SMS", "There is no such book in the library!");
+                //printf("Такой книги нет в библиотеке\n");
+            }
+
+
+    }
+}
+
+void MainWindow::on_pushButton_3_clicked()//сдача книг
+{
+    int zapros, j, n=10, p;
+    QString no;
+    zapros=ui->lineEdit_7->text().toInt();
+    j=0;
+    for(book* t=firstbook;t!=NULL;t=t->next)
+    {
+        if(zapros==t->UDKnumber)
+        {
+            t->kolvo=t->kolvo+1;
+            p=t->kolvo;
+            QString str=" ";
+            QString str1=(QString::number(zapros));
+            QString str2=(QString::number(p));
+            QString Fina3=str1+str+str2;
+            ui->textEdit_3->append(Fina3);
+            QMessageBox::information(0, "SMS", "The book is handed over!");
+            // printf("Книга сдана!\n");
+            break;
+        }
+        if((zapros>lastbook->UDKnumber)&&(zapros!=lastbook->UDKnumber))
+        {
+            no="not";
+            QString str=" ";
+            QString str1=(QString::number(zapros));
+            QString str2=no;
+            QString Fina3=str1+str+str2;
+            ui->textEdit_3->append(Fina3);
+            QMessageBox::information(0, "SMS", "There is no such book in the library!");
+            //printf("Такой книги нет в библиотеке\n");
+        }
+        t = t->next;
+    }
+
+}
